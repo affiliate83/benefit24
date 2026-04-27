@@ -199,19 +199,37 @@ h3.b24-card-title,
 
 /* ── PC 2컬럼: 세로형 카드 + 썸네일 높이 고정 ── */
 @media (min-width: 600px) {
-    .b24-grid { grid-template-columns: repeat(2, 1fr); }
+    .b24-grid {
+        grid-template-columns: repeat(2, 1fr);
+        align-items: start;
+    }
+    /* Ad Inserter 등 플러그인이 grid 안에 주입한 요소 숨김 */
+    .b24-grid > :not(.b24-card) { display: none !important; }
+
     .b24-card { flex-direction: column; }
+
     .b24-card-thumb {
         width: 100%;
         min-width: unset;
-        height: 160px;
-        min-height: 160px;
+        height: 160px !important;
+        max-height: 160px !important;
+        min-height: 160px !important;
         flex-shrink: 0;
+        overflow: hidden;
     }
+    /* 이모지 중앙 정렬 */
     .b24-card-thumb-default {
-        height: 160px;
-        min-height: 160px;
         width: 100%;
+        height: 100%;
         font-size: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #EEF2FF;
+    }
+    .b24-card-thumb img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
     }
 }
