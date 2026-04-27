@@ -75,7 +75,9 @@ def send_push(title: str, body: str, link: str) -> bool:
     print(f'[Push API] status={resp.status_code}  body={resp.text[:300]}')
     try:
         result = resp.json()
-        return result.get('result') is True
+        r = result.get('result')
+        # API가 boolean true 또는 문자열 "true"/"t"/1 등으로 반환하는 경우 모두 처리
+        return r is True or str(r).lower() in ('true', 't', '1')
     except Exception:
         return resp.status_code == 200
 
