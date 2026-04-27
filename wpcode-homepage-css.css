@@ -197,14 +197,29 @@ h3.b24-card-title,
 .b24-card-more { font-size: 12px; color: #2563eb; font-weight: 600; }
 .b24-empty { text-align: center; color: #9CA3AF; padding: 40px 0; font-size: 16px; }
 
+/* ── 애드센스 광고 유닛 ── */
+.b24-ad-unit {
+    grid-column: 1 / -1;   /* 전체 열 차지 */
+    width: 100%;
+    min-height: 100px;
+    background: #f8fafc;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.b24-ad-unit .adsbygoogle { width: 100%; }
+
 /* ── PC 2컬럼: 세로형 카드 + 썸네일 높이 고정 ── */
 @media (min-width: 600px) {
     .b24-grid {
         grid-template-columns: repeat(2, 1fr);
         align-items: start;
     }
-    /* Ad Inserter 등 플러그인이 grid 안에 주입한 요소 숨김 */
-    .b24-grid > :not(.b24-card) { display: none !important; }
+    /* Ad Inserter 등 외부 플러그인 주입 요소 숨김 (.b24-ad-unit은 제외) */
+    .b24-grid > :not(.b24-card):not(.b24-ad-unit) { display: none !important; }
 
     .b24-card { flex-direction: column; }
 

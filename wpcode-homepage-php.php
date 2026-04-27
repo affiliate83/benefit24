@@ -3,7 +3,33 @@
  * WP Code 스니펫 - PHP (Function snippet)
  * 메인 홈페이지 카드형 레이아웃 숏코드
  * 사용법: 정적 프론트 페이지의 본문에 [benefit24_home] 삽입
+ *
+ * 애드센스 설정 방법:
+ * 1. B24_ADSENSE_CLIENT → 본인 pub-ID로 교체 (예: ca-pub-1234567890123456)
+ * 2. B24_ADSENSE_SLOT   → 광고 단위 슬롯 ID로 교체 (예: 1234567890)
+ * 3. B24_AD_EVERY       → 몇 개 카드마다 광고를 삽입할지 (기본값 4 = 2행마다)
  */
+
+define('B24_ADSENSE_CLIENT', 'ca-pub-XXXXXXXXXXXXXXXX'); // ← pub-ID 교체
+define('B24_ADSENSE_SLOT',   'XXXXXXXXXX');              // ← 슬롯 ID 교체
+define('B24_AD_EVERY',       4);                         // 카드 4개(2행)마다 광고 1개
+
+function benefit24_ad_unit() {
+    // 게재 제한 중일 때는 빈 div만 렌더링 (자리 확보용)
+    // 제한 해제 후 ins 태그 주석을 풀면 즉시 광고가 나옵니다
+    ob_start(); ?>
+    <div class="b24-ad-unit">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="<?php echo esc_attr(B24_ADSENSE_CLIENT); ?>"
+             data-ad-slot="<?php echo esc_attr(B24_ADSENSE_SLOT); ?>"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+    <?php return ob_get_clean();
+}
+
 function benefit24_homepage_content() {
     $args = [
         'post_type'      => 'post',
@@ -48,36 +74,43 @@ function benefit24_homepage_content() {
         </div>
 
         <div class="b24-grid">
-            <?php if ($query->have_posts()) : ?>
-                <?php while ($query->have_posts()) : $query->the_post(); ?>
-                    <?php
-                        $cats     = get_the_category();
-                        $cat_name = $cats ? esc_html($cats[0]->name) : '지원금';
-                        $excerpt  = wp_trim_words(wp_strip_all_tags(get_the_excerpt()), 18, '…');
-                    ?>
-                    <a href="<?php the_permalink(); ?>" class="b24-card">
-                        <div class="b24-card-thumb">
-                            <?php if (has_post_thumbnail()) : ?>
-                                <?php the_post_thumbnail('medium', ['loading' => 'lazy', 'alt' => get_the_title()]); ?>
-                            <?php else : ?>
-                                <div class="b24-card-thumb-default">💰</div>
-                            <?php endif; ?>
+            <?php if ($query->have_posts()) :
+                $card_count = 0;
+                while ($query->have_posts()) : $query->the_post();
+                    $cats     = get_the_category();
+                    $cat_name = $cats ? esc_html($cats[0]->name) : '지원금';
+                    $excerpt  = wp_trim_words(wp_strip_all_tags(get_the_excerpt()), 18, '…');
+                    $card_count++;
+            ?>
+                <a href="<?php the_permalink(); ?>" class="b24-card">
+                    <div class="b24-card-thumb">
+                        <?php if (has_post_thumbnail()) : ?>
+                            <?php the_post_thumbnail('medium', ['loading' => 'lazy', 'alt' => get_the_title()]); ?>
+                        <?php else : ?>
+                            <div class="b24-card-thumb-default">💰</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="b24-card-body">
+                        <span class="b24-card-cat"><?php echo $cat_name; ?></span>
+                        <h3 class="b24-card-title"><?php the_title(); ?></h3>
+                        <?php if ($excerpt) : ?>
+                            <p class="b24-card-excerpt"><?php echo esc_html($excerpt); ?></p>
+                        <?php endif; ?>
+                        <div class="b24-card-footer">
+                            <span class="b24-card-date"><?php echo get_the_date('Y.m.d'); ?></span>
+                            <span class="b24-card-more">자세히 보기 →</span>
                         </div>
-                        <div class="b24-card-body">
-                            <span class="b24-card-cat"><?php echo $cat_name; ?></span>
-                            <h3 class="b24-card-title"><?php the_title(); ?></h3>
-                            <?php if ($excerpt) : ?>
-                                <p class="b24-card-excerpt"><?php echo esc_html($excerpt); ?></p>
-                            <?php endif; ?>
-                            <div class="b24-card-footer">
-                                <span class="b24-card-date"><?php echo get_the_date('Y.m.d'); ?></span>
-                                <span class="b24-card-more">자세히 보기 →</span>
-                            </div>
-                        </div>
-                    </a>
-                <?php endwhile; ?>
-                <?php wp_reset_postdata(); ?>
-            <?php else : ?>
+                    </div>
+                </a>
+
+                <?php
+                // B24_AD_EVERY 개(기본 4개=2행)마다 광고 삽입
+                if ($card_count % B24_AD_EVERY === 0) {
+                    echo benefit24_ad_unit();
+                }
+                endwhile;
+                wp_reset_postdata();
+            else : ?>
                 <p class="b24-empty">등록된 지원금 정보가 없습니다.</p>
             <?php endif; ?>
         </div>
