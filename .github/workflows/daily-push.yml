@@ -1,0 +1,30 @@
+name: 지원금알리미 자동 푸시 알림
+
+on:
+  schedule:
+    - cron: '0 23 * * *'   # 오전 08:00 KST
+    - cron: '0 4 * * *'    # 오후 01:00 KST
+    - cron: '0 10 * * *'   # 오후 07:00 KST
+  workflow_dispatch:        # 수동 실행 (테스트용)
+
+jobs:
+  send-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 의존성 설치
+        run: pip install requests
+
+      - name: 푸시 알림 발송
+        env:
+          WP_BASE_URL: ${{ secrets.WP_BASE_URL }}
+          SWING2APP_APP_ID: ${{ secrets.SWING2APP_APP_ID }}
+          SWING2APP_API_KEY: ${{ secrets.SWING2APP_API_KEY }}
+        run: python scripts/send_push.py
