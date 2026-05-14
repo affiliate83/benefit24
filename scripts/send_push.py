@@ -5,6 +5,7 @@
 - GitHub Actions에서 하루 3회 실행 (08:00 / 13:00 / 19:00 KST)
 """
 import os
+import random
 import sys
 import requests
 import html
@@ -30,8 +31,8 @@ def get_template():
         return '🔔 저녁 지원금 소식', '오늘 하루 업데이트된 지원금·복지 혜택을 확인하세요.'
 
 
-def get_posts(count: int = 6) -> list:
-    """WordPress REST API로 최신 포스트 조회"""
+def get_posts(count: int = 50) -> list:
+    """WordPress REST API로 최근 포스트 조회 (랜덤 선택 풀)"""
     url = f'{WP_BASE_URL}/wp-json/wp/v2/posts'
     params = {
         'per_page': count,
@@ -46,18 +47,8 @@ def get_posts(count: int = 6) -> list:
 
 
 def pick_post(posts: list) -> dict:
-    """
-    시간대에 따라 다른 포스트 선택:
-    오전 → 최신, 오후 → 2번째, 저녁 → 3번째 (없으면 최신으로 fallback)
-    """
-    hour = datetime.now(KST).hour
-    if hour < 12:
-        idx = 0
-    elif hour < 17:
-        idx = 1
-    else:
-        idx = 2
-    return posts[min(idx, len(posts) - 1)]
+    """최근 50개 포스트 중 랜덤 선택"""
+    return random.choice(posts)
 
 
 def send_push(title: str, body: str, link: str) -> bool:
@@ -91,7 +82,7 @@ def main():
     now_str = datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')
     print(f'[{now_str}] 지원금알리미 자동 푸시 시작')
 
-    posts = get_posts(6)
+    posts = get_posts()
     if not posts:
         print('포스트 없음 - 종료')
         sys.exit(0)
