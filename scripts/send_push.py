@@ -39,9 +39,8 @@ def get_posts(count: int = 50) -> list:
         'status': 'publish',
         'orderby': 'date',
         'order': 'desc',
-        '_fields': 'id,title,link,excerpt,date',
     }
-    resp = requests.get(url, params=params, headers={'Content-Type': 'application/json'}, timeout=15)
+    resp = requests.get(url, params=params, timeout=15)
     resp.raise_for_status()
     return resp.json()
 
