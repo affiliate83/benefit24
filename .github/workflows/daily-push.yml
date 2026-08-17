@@ -1,10 +1,11 @@
 name: 지원금알리미 자동 푸시 알림
 
 on:
-  schedule:
-    - cron: '0 23 * * *'   # 오전 08:00 KST
-    - cron: '0 4 * * *'    # 오후 01:00 KST
-    - cron: '0 10 * * *'   # 오후 07:00 KST
+  # schedule 트리거 임시 중지 (재개하려면 아래 주석을 해제)
+  # schedule:
+  #   - cron: '0 23 * * *'   # 오전 08:00 KST
+  #   - cron: '0 4 * * *'    # 오후 01:00 KST
+  #   - cron: '0 10 * * *'   # 오후 07:00 KST
   workflow_dispatch:        # 수동 실행 (테스트용)
 
 jobs:
